@@ -1,0 +1,33 @@
+{{ if .Values.components.postgresqlcli.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgresqlcli
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      service: postgresqlcli
+  template:
+    metadata:
+      labels:
+        service: postgresqlcli
+    spec:
+      containers:
+        - image: {{ .Values.images.postgresqlcli | default "jbergknoff/postgresql-client" }}
+          name: postgresqlcli
+          resources: {}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: ["-c", "tail -f /dev/null"]
+          env: 
+          {{ if eq .Values.postgresql.enabled false }}
+          - name: POSTGRESQL_HOST
+            value: {{ default "" .Values.postgresql.host | quote }}
+          - name: POSTGRESQL_PORT
+            value: {{ default "" .Values.postgresql.port | quote }}
+          {{ end }}
+      restartPolicy: Always
+status: {}
+{{ end }}

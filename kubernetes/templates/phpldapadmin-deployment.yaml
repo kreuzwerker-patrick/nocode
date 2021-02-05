@@ -1,0 +1,37 @@
+# DOES NOT WORK YET...
+{{ if .Values.components.phpldapadmin.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: phpldapadmin
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      service: phpldapadmin
+  template:
+    metadata:
+      labels:
+        service: phpldapadmin
+    spec:
+      containers:
+        - image: {{ .Values.images.phpldapadmin | default "goodsmileduck/redis-cli" }}
+          name: phpldapadmin
+          resources: {}
+          imagePullPolicy: IfNotPresent
+          ports:
+          - name: container
+            containerPort: 443
+          # command: ["/bin/sh"]
+          # args: ["-c", "tail -f /dev/null"]
+          env: 
+          {{ if eq .Values.openldap.enabled false }}
+          - name: LDAP_HOST
+            value: {{ default "" .Values.openldap.host | quote }}
+          - name: LDAP_PORT
+            value: {{ default "" .Values.openldap.port | quote }}
+          {{ end }}
+      restartPolicy: Always
+status: {}
+{{ end }}

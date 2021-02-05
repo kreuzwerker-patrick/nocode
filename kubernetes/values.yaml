@@ -1,0 +1,88 @@
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+# resources:
+#   limits:
+#     cpu: 100m
+#     memory: 128Mi
+#   requests:
+#     cpu: 100m
+#     memory: 128Mi
+
+components:
+  rediscli:
+    enabled: false
+  mysqlcli:
+    enabled: false
+  postgresqlcli:
+    enabled: false
+  # DOES NOT WORK YET...
+  phpldapadmin:
+    enabled: false
+images:
+  # test using:
+  # k exec -it $(k get po -n nocode -l service=rediscli -o custom-columns=":metadata.name" --no-headers) -n nocode -- redis-cli -h nocode-redis-master
+  rediscli: goodsmileduck/redis-cli
+  # test using:
+  # k exec -it $(k get po -n nocode -l service=mysqlcli -o custom-columns=":metadata.name" --no-headers) -n nocode -- mysql -u root -ppassword -h nocode-mysql my_database
+  mysqlcli: arey/mysql-client
+  # test using:
+  ### k exec -it $(k get po -n nocode -l service=postgresqlcli -o custom-columns=":metadata.name" --no-headers) -n nocode -- sh -c 'echo "$NOCODE_POSTGRESQL_SERVICE_HOST:$NOCODE_POSTGRESQL_SERVICE_PORT:my_database:postgres:password" > /root/.pgpass && chmod 600 /root/.pgpass '
+  # k exec -it $(k get po -n nocode -l service=postgresqlcli -o custom-columns=":metadata.name" --no-headers) -n nocode -- sh -c 'psql --host="${NOCODE_POSTGRESQL_SERVICE_HOST}" --user=postgres --password'
+  postgresqlcli: jbergknoff/postgresql-client
+  # DOES NOT WORK YET...
+  phpldapadmin: osixia/openldap
+mysql:
+  enabled: true
+  host: remote_host
+  port: 3306
+  auth:
+    rootPassword: password
+redis:
+  enabled: false
+  host: remote_host
+  port: 6379
+  usePassword: false
+  master:
+    persistence:
+      enabled: false
+redis-cluster:
+  enabled: false
+  usePassword: false
+  master:
+    persistence:
+      enabled: false
+elasticsearch:
+  enabled: false
+  host: remote_host
+  port: 3306
+postgresql:
+  enabled: false
+  host: remote_host
+  port: 3306
+  postgresqlPassword: password
+  postgresqlDatabase: my_database
+consul:
+  enabled: true
+  host: remote_host
+  persistance:
+    enabled: false
+  # enable for testing consul UI on minikube
+  # service:
+  #   type: LoadBalancer
+  #   port: 35000
+# DOES NOT WORK YET...
+openldap:
+  enabled: false
+  host: remote_host
+  port: 389
+  openldap:
+    openldap-hostname: remote_host
+

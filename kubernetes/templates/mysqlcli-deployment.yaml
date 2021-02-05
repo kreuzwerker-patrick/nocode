@@ -1,0 +1,33 @@
+{{ if .Values.components.mysqlcli.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysqlcli
+spec:
+  replicas: 1
+  strategy: {}
+  selector:
+    matchLabels:
+      service: mysqlcli
+  template:
+    metadata:
+      labels:
+        service: mysqlcli
+    spec:
+      containers:
+        - image: {{ .Values.images.mysqlcli | default "arey/mysql-client" }}
+          name: mysqlcli
+          resources: {}
+          imagePullPolicy: IfNotPresent
+          command: ["/bin/sh"]
+          args: ["-c", "tail -f /dev/null"]
+          env: 
+          {{ if eq .Values.mysql.enabled false }}
+          - name: MYSQL_HOST
+            value: {{ default "" .Values.mysql.host | quote }}
+          - name: MYSQL_PORT
+            value: {{ default "" .Values.mysql.port | quote }}
+          {{ end }}
+      restartPolicy: Always
+status: {}
+{{ end }}
